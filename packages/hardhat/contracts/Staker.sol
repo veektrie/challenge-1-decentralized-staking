@@ -15,6 +15,12 @@ contract Staker {
     mapping(address => uint256) public balances;
     uint256 public constant threshold = 1 ether;
 
+    // Set a deadline to 30 seconds after deployment
+    uint256 public deadline = block.timestamp + 30 seconds;
+
+    // Flag to indicate if withdrawals are allowed (if threshold is not met)
+    bool public openForWithdraw;
+
     // Event to log staking actions
     event Stake(address indexed staker, uint256 amount);
 
@@ -25,8 +31,29 @@ contract Staker {
         emit Stake(msg.sender, msg.value);
     }
 
-    // (Make sure to add a `Stake(address,uint256)` event and emit it for the frontend `All Stakings` tab to display)
+    // Execute function that anyone can call after the deadline has passed
+    // If the contract balance is at or above the threshold, it sends the balance to the external contract.
+    // Otherwise, it sets openForWithdraw to true so users can withdraw their funds.
+    function execute() public {
+        require(block.timestamp >= deadline, "Deadline not reached yet");
 
+        if (address(this).balance >= threshold) {
+            // If threshold is met, complete the external contract by sending all funds.
+            exampleExternalContract.complete{ value: address(this).balance }();
+        } else {
+            // If threshold is not met, enable withdrawals.
+            openForWithdraw = true;
+        }
+    }
+
+    // timeLeft returns the time remaining before the deadline.
+    // If the deadline has passed, it returns 0.
+    function timeLeft() public view returns (uint256) {
+        if (block.timestamp >= deadline) {
+            return 0;
+        }
+        return deadline - block.timestamp;
+    }
     // After some `deadline` allow anyone to call an `execute()` function
     // If the deadline has passed and the threshold is met, it should call `exampleExternalContract.complete{value: address(this).balance}()`
 
