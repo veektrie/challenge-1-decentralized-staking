@@ -6,10 +6,11 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Stakings: NextPage = () => {
+  // Replace 3750241n with your actual deployment block (or deployment block - 10)
   const { data: stakeEvents, isLoading } = useScaffoldEventHistory({
     contractName: "Staker",
     eventName: "Stake",
-    fromBlock: 0n,
+    fromBlock: 3750241n,
   });
 
   if (isLoading)
@@ -18,6 +19,7 @@ const Stakings: NextPage = () => {
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
+
   return (
     <div className="flex items-center flex-col flex-grow pt-10">
       <div className="px-5">
@@ -41,13 +43,16 @@ const Stakings: NextPage = () => {
                 </td>
               </tr>
             ) : (
-              stakeEvents?.map((event, index) => {
+              stakeEvents.map((event, index) => {
+                // Access the event arguments using their named properties
+                const staker = event.args?.staker;
+                const amount = event.args?.amount;
                 return (
                   <tr key={index}>
                     <td>
-                      <Address address={event.args?.[0]} />
+                      <Address address={staker as string} />
                     </td>
-                    <td>{formatEther(event.args?.[1] || 0n)} ETH</td>
+                    <td>{formatEther(amount || 0n)} ETH</td>
                   </tr>
                 );
               })
