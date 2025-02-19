@@ -15,6 +15,12 @@ contract Staker {
     mapping(address => uint256) public balances;
     uint256 public constant threshold = 1 ether;
 
+    // Declare the modifier before using it
+    modifier notCompleted() {
+        require(!exampleExternalContract.completed(), "External contract already completed");
+        _;
+    }
+
     // Set a deadline to 30 seconds after deployment
     uint256 public deadline = block.timestamp + 30 seconds;
 
