@@ -46,6 +46,19 @@ contract Staker {
         }
     }
 
+    // Withdraw function for users to retrieve their funds if openForWithdraw is true.
+    // Protected by notCompleted to avoid withdrawal after external contract completion.
+    function withdraw() public notCompleted {
+        require(openForWithdraw, "Withdrawals are not allowed");
+        uint256 userBalance = balances[msg.sender];
+        require(userBalance > 0, "No funds to withdraw");
+
+        // Reset balance before transferring to prevent re-entrancy attacks.
+        balances[msg.sender] = 0;
+        (bool sent, ) = msg.sender.call{ value: userBalance }("");
+        require(sent, "Failed to send Ether");
+    }
+
     // timeLeft returns the time remaining before the deadline.
     // If the deadline has passed, it returns 0.
     function timeLeft() public view returns (uint256) {
