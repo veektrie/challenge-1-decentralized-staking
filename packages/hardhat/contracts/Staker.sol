@@ -22,7 +22,7 @@ contract Staker {
     }
 
     // Set a deadline to 30 seconds after deployment
-    uint256 public deadline = block.timestamp + 30 seconds;
+    uint256 public deadline = block.timestamp + 72 hours;
 
     // Flag to indicate if withdrawals are allowed (if threshold is not met)
     bool public openForWithdraw;
