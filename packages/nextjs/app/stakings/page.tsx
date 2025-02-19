@@ -6,12 +6,10 @@ import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Stakings: NextPage = () => {
-  // Update fromBlock to a block near the contract deployment to load events faster.
-  // Replace 3750241n with your actual contract deployment block (or deployment block - 10).
   const { data: stakeEvents, isLoading } = useScaffoldEventHistory({
     contractName: "Staker",
     eventName: "Stake",
-    fromBlock: 3750241n,
+    fromBlock: 0n,
   });
 
   if (isLoading)
